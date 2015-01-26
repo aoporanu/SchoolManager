@@ -20,3 +20,4 @@ Router::connect('/lesson/:id', array('plugin' => 'SchoolManager',
     'controller' => 'Lessons', 'action' => 'view'));
 Router::connect('/classes', array('plugin' => 'SchoolManager', 'controller' => 'lessons', 'action' => 'classes_index'));
 Router::connect('/rate-paper', array('plugin' => 'SchoolManager', 'controller' => 'lessons', 'action' => 'ratePaper'));
+Router::connect('/enter-phone', array('plugin' => 'SchoolManager', 'controller' => 'lessons', 'action' => 'enterPhone'));

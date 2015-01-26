@@ -29,6 +29,12 @@ class Lesson extends SchoolManagerAppModel {
             'alphaNumeric' => array(
                 'rule' => 'notEmpty',
                 'required' => true
+            ),
+            'unique' => array(
+                'rule' => array(
+                    'isUnique', array('name', 'user_id'), false
+                ),
+                'message' => 'You already have this lesson registered to your account'
             )
         ),
 
@@ -205,5 +211,14 @@ lesson_id ='$lessonId'");
 
     public function teachersCourses($userId) {
         return $this->query("select * from lessons where user_id = '$userId'");
+    }
+
+    public function markInactive($lessonId) {
+//        $this->read('id', $lessonId);
+        $this->id = $lessonId;
+        $field = $this->field('is_active');
+        if ($field == '1') {
+            $this->saveField('is_active', '0');
+        }
     }
 }

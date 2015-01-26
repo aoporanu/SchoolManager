@@ -6,7 +6,7 @@ App::uses('SchoolManagerAppController', 'SchoolManager.Controller');
  */
 class LessonsController extends SchoolManagerAppController {
     public $uses = array('SchoolManager.Lesson', 'Users.User');
-    public $components = array('Paginator', 'Auth');
+    public $components = array('Paginator', 'Auth', 'Twilio.Twilio');
 
     public function beforeFilter() {
         $this->Auth->allow('ratePaper');
@@ -69,8 +69,16 @@ class LessonsController extends SchoolManagerAppController {
             }
             if ($this->Lesson->save($data)) {
                 $this->Session->setFlash(__('The lesson has been saved'));
-                // send text
-                // send email
+                // send text message
+                if(CakeSession::read('Auth.User.phone_no')) {
+                    $this->Twilio->sendSingleSms('', 'You have just added ' . $data['name'] . ' to your courses catalog');
+                } else {
+                    // mark the lesson as inactive
+                    $this->Lesson->markInactive($this->Lesson->getLastInsertId());
+                    // send an email to the user telling them to update their profile and include a phone number.
+                    $this->redirect('/enter-phone');
+                }
+
             } else {
                 $errors = $this->Lesson->invalidFields();
                 $values = $this->request->data;
@@ -176,6 +184,17 @@ class LessonsController extends SchoolManagerAppController {
             // process and set a flag so we can show a field.
         } else {
             $this->set('showError', 1);
+        }
+    }
+
+    /**
+     * If the teacher has not entered his phone no yet, present this method which will save the number they enter into the user table.
+     */
+    public function enterPhone() {
+        if ($this->request->is('post')) {
+            $this->Lesson->enterPhone();
+        } else {
+            $this->layout = 'ajax_dialog';
         }
     }
 }

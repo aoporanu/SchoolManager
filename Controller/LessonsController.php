@@ -10,6 +10,18 @@ class LessonsController extends SchoolManagerAppController {
 
     public function beforeFilter() {
         $this->Auth->allow('ratePaper');
+        // allowed only for teachers.
+        if ($this->Auth->user('role') == 'teacher') {
+            $this->Auth->allowedActions = array('index', 'view', 'add', 'edit');
+        }
+        // actions allowed only to users
+        if ($this->Auth->user('role') == 'student') {
+            $this->Auth->allowedActions = array('enroll', 'disenroll');
+        }
+
+        if ($this->Auth->user('role') == 'admin') {
+            $this->Auth->allow('*');
+        }
     }
 
     public function index() {
@@ -36,10 +48,6 @@ class LessonsController extends SchoolManagerAppController {
 
     public function add() {
         // don't allow people other than admins to add lessons.
-        if($this->Auth->user('role') != 'admin') {
-            $this->Session->setFlash(__('Only admins can add lessons'));
-            return $this->redirect('/lessons');
-        }
         $teachers = $this->User->findAllByRole('teacher');
         $this->set(compact('teachers'));
         if ($this->request->is('post')) {
@@ -52,7 +60,7 @@ class LessonsController extends SchoolManagerAppController {
                     strtotime($post['lesson-date_end'])),
                 'created_at' => date('Y-m-d'),
                 'updated_at' => date('Y-m-d'),
-                'user_id' => $post['user_id']
+                'user_id' => $this->Auth->user('id')
             );
 
 
@@ -61,6 +69,8 @@ class LessonsController extends SchoolManagerAppController {
             }
             if ($this->Lesson->save($data)) {
                 $this->Session->setFlash(__('The lesson has been saved'));
+                // send text
+                // send email
             } else {
                 $errors = $this->Lesson->invalidFields();
                 $values = $this->request->data;
@@ -117,10 +127,10 @@ class LessonsController extends SchoolManagerAppController {
             classes'));
             return $this->redirect('/lessons');
         }
-        $userId = $this->Auth->user('id');
+        /*$userId = $this->Auth->user('id');
         $lessonId = $this->request->params['id'];
-        $lesson = explode('-', $lessonId);
-        $this->Session->setFlash($this->Lesson->enroll($userId, $lesson[count($lesson) - 1]));
+        $lesson = explode('-', $lessonId);*/
+        $this->Session->setFlash($this->Lesson->enroll($this->request->params['id']));
         return $this->redirect('/lessons');
     }
 

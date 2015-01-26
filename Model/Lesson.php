@@ -27,9 +27,8 @@ class Lesson extends SchoolManagerAppModel {
     public $validate = array(
         'name' => array(
             'alphaNumeric' => array(
-                'rule' => 'alphaNumeric',
-                'required' => true,
-                'message' => 'Letters and numbers only',
+                'rule' => 'notEmpty',
+                'required' => true
             )
         ),
 
@@ -130,16 +129,18 @@ class Lesson extends SchoolManagerAppModel {
      * @param $lessonId
      * @return string
      */
-    public function enroll($userId, $lessonId) {
+    public function enroll($lessonId) {
+        $lesson = explode('-', $lessonId);
+        $userId = CakeSession::read('Auth.User.id');
         $count = $this->query("select count(*) as count from lessson_students where
         user_id = '$userId' and
 lesson_id ='$lessonId'");
         // vezi ca lectia sa nu fi inceput deja.
         $startDate = $this->read('date_start', $lessonId);
-        $msg = '';
         if ( $this->teacherFor($lessonId) == 'N/A' || is_null($this->teacherFor($lessonId)) ) {
             throw new Exception('There\'s no teacher appointed to this lesson');
         }
+        $msg = '';
         if ($startDate['Lesson']['date_start'] <= date('Y-m-d')) {
             $msg .= 'The lesson has already started.';
         } else {

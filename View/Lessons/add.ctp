@@ -6,29 +6,6 @@
             Active (y/n)
         </label>
     </div>
-    <?php if (isset($errors['user_id']) && !empty($errors['user_id'])) { ?>
-        <div class="bs-callout bs-callout-info">
-            <p class="bg-danger">
-                <button type="button" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <?php echo $errors['name'][0]; ?>
-            </p>
-        </div>
-    <?php } ?>
-    <div class="form-group <?php if (isset($errors['user_id']) && !empty
-                              ($errors['user_id'])) { echo 'has-error'; } ?>">
-        <label for="UserId">Teacher:</label>
-        <select name="user_id" id="UserId" class="form-control">
-            <option value=""></option>
-            <?php foreach ($teachers as $teacher) { ?>
-                <option value="<?php echo $teacher['User']['id'] ?>"<?php
-                if (isset($errors) && !empty($errors['user_id'])) { if
-                ($values['user_id'] == $teacher['User']['id']) { echo
-                'selected="selected"'; } }
-                ?>><?php
-                echo $teacher['User']['username']; ?></option>
-            <?php } ?>
-        </select>
-    </div>
     <?php if (isset($errors['name']) && !empty($errors['name'])) { ?>
         <div class="bs-callout bs-callout-info">
             <p class="bg-danger">

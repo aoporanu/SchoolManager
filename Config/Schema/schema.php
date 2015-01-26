@@ -39,7 +39,7 @@ class SchoolManagerSchema extends CakeSchema {
 		)
 	);
 
-	public $lesson_students = array(
+	public $lessson_students = array(
 		'id' => array('type' => 'integer', 'null' => false, 'length' => '3', 'key' => 'primary'),
 		'user_id' => array('type' => 'string', 'null' => false, 'length' => '36'),
 		'lesson_id' => array('type' => 'integer', 'null' => false, 'length' => '3')

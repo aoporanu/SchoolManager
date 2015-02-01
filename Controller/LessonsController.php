@@ -5,7 +5,7 @@ App::uses('SchoolManagerAppController', 'SchoolManager.Controller');
  *
  */
 class LessonsController extends SchoolManagerAppController {
-    public $uses = array('SchoolManager.Lesson', 'Users.User');
+    public $uses = array('SchoolManager.Lesson', 'Users.User', 'SchoolManager.AppUser');
     public $components = array('Paginator', 'Auth', 'Twilio.Twilio');
 
     public function beforeFilter() {
@@ -50,6 +50,7 @@ class LessonsController extends SchoolManagerAppController {
         // don't allow people other than admins to add lessons.
         $teachers = $this->User->findAllByRole('teacher');
         $this->set(compact('teachers'));
+        $this->set('modal', false);
         if ($this->request->is('post')) {
             $post = $this->request->data;
             $data = array(
@@ -63,6 +64,9 @@ class LessonsController extends SchoolManagerAppController {
                 'user_id' => $this->Auth->user('id')
             );
 
+            if(array_key_exists('phone', $post)) {
+                $this->AppUser->savePhone($post['phone']);
+            }
 
             if (isset($post['lesson-is_active'])) {
                 $data['is_active'] = $post['lesson-is_active'];
@@ -76,7 +80,7 @@ class LessonsController extends SchoolManagerAppController {
                     // mark the lesson as inactive
                     $this->Lesson->markInactive($this->Lesson->getLastInsertId());
                     // send an email to the user telling them to update their profile and include a phone number.
-                    $this->redirect('/enter-phone');
+                    $this->set('modal', true);
                 }
 
             } else {
@@ -192,7 +196,7 @@ class LessonsController extends SchoolManagerAppController {
      */
     public function enterPhone() {
         if ($this->request->is('post')) {
-            $this->Lesson->enterPhone();
+            $this->Session->setFlash($this->Lesson->enterPhone($this->request->data));
         } else {
             $this->layout = 'ajax_dialog';
         }

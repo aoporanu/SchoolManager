@@ -12,4 +12,12 @@ class AppUser extends User {
     public $name = 'AppUser';
 
     public $useTable = 'users';
+
+    public function savePhone() {
+        $user = CakeSession::read('Auth.User');
+        var_dump($user);
+        $userDb = $this->findById($user['id']);
+        var_dump($userDb);
+        die('xxx');
+    }
 } 

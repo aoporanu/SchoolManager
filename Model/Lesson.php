@@ -1,6 +1,7 @@
 <?php
 App::uses('SchoolManagerAppModel', 'SchoolManager.Model');
 App::import('Model', 'SchoolManager.Paper');
+App::import('Users.User');
 /**
  * Lesson Model
  *
@@ -220,5 +221,11 @@ lesson_id ='$lessonId'");
         if ($field == '1') {
             $this->saveField('is_active', '0');
         }
+    }
+
+    public function enterPhone($data) {
+        debug($data);
+        $this->User->id = CakeSession::read('Auth.User.id');
+//        $this->User->saveField('phone', $data[''])
     }
 }
